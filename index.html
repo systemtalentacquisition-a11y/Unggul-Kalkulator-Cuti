@@ -187,28 +187,50 @@
     tr.cur td { background: var(--cur); font-weight: 600 }
     td.n, th.n { text-align: right }
 
-    .cols { display: grid; grid-template-columns: minmax(230px, 460px); gap: 12px }
+    .cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px }
     .pc[hidden] { display: none }
-    .pc { border: 1px solid var(--line); border-radius: 8px; overflow: hidden }
-    .pc h3 { margin: 0; padding: 8px 12px; font-size: 14px; color: #14202b }
-    .pc dl { margin: 0; padding: 6px 12px }
-    .pc dl div { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; border-bottom: 1px dotted var(--line) }
-    .pc dt { color: var(--mut) }
-    .pc dd { margin: 0; font-weight: 600 }
-
-    .sh {
-      display: grid;
-      grid-template-columns: auto 64px 1fr;
-      gap: 8px;
-      align-items: center;
-      padding: 8px 12px;
-      border-top: 1px solid var(--line)
+    .pc { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card) }
+    .ph {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px;
+      padding: 12px 16px; color: #14202b;
+      background: linear-gradient(100deg, var(--c), color-mix(in srgb, var(--c) 55%, #fff))
     }
+    .ph b { font-size: 16px }
+    .ph .tag { background: rgba(255,255,255,.65); border-radius: 99px; padding: 1px 10px; font-weight: 700; font-size: 13px }
+    .ph .wk { margin-left: auto; font-size: 13px; font-weight: 600; opacity: .8 }
+    .pb { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; padding: 16px }
+    @media (max-width: 700px) { .pb { grid-template-columns: minmax(0, 1fr) } }
 
-    .sh b { padding: 2px 10px; border-radius: 4px; color: #14202b; background: #f7b500 }
-    .sh.m b { background: #2fb35a }
-    .sh input { padding: 4px 6px; text-align: right }
-    .sh span { text-align: right; font-weight: 600 }
+    .tl { list-style: none; margin: 0; padding: 0; position: relative }
+    .tl::before { content: ""; position: absolute; left: 13px; top: 16px; bottom: 16px; width: 2px; background: var(--line) }
+    .tl li { position: relative; display: flex; align-items: center; gap: 14px; padding: 7px 0 }
+    .tl .n {
+      position: relative; z-index: 1; flex: none; width: 28px; height: 28px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 13px; font-weight: 700;
+      background: var(--c); color: #14202b; box-shadow: 0 0 0 4px var(--card)
+    }
+    .tl small { display: block; color: var(--mut); font-size: 12px; line-height: 1.2 }
+    .tl strong { font-size: 16px }
+    .pc strong:empty::before { content: "—"; color: var(--mut); font-weight: 400 }
+
+    .sf { display: flex; flex-direction: column; gap: 10px }
+    .sc { border: 1px solid var(--line); border-left: 4px solid var(--a); border-radius: 8px; background: var(--inp); padding: 10px 12px }
+    .sc.up { --a: #f7b500 }
+    .sc.dn { --a: #2fb35a }
+    .sc .t { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px }
+    .sc .t b { font-size: 14px }
+    .sc .t span { font-size: 12px; color: var(--mut) }
+    .stp { display: flex; align-items: center; gap: 6px }
+    .stp button {
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--line);
+      background: var(--card); color: var(--ink); font: 700 18px/1 system-ui; cursor: pointer; padding: 0
+    }
+    .stp button:hover { border-color: var(--acc); color: var(--acc) }
+    .stp input { width: 64px; text-align: center; padding: 6px }
+    .stp em { font-style: normal; color: var(--mut); font-size: 13px }
+    .sc .rs { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line) }
+    .sc .rs small { display: block; color: var(--mut); font-size: 12px }
+    .sc .rs strong { font-size: 17px }
 
     .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px }
     .top .r { display: flex; align-items: center; gap: 14px }
@@ -377,17 +399,21 @@
     $('rs').innerHTML = Object.entries(R).map(([k, r]) =>
       `<button data-r="${k}" aria-pressed="${k === st.r}"><i style="background:var(${r.c})"></i><span><b>${r.k}</b><small>${r.n} · ${r.w} hari kerja</small></span></button>`).join('');
 
-    $('cols').innerHTML = Object.entries(R).map(([k, r]) =>
-      `<div class="pc" data-k="${k}"><h3 style="background:var(${r.c})">${r.n} (${r.k}) · ${r.w}</h3>
-      <dl>
-        <div><dt>Awal cuti</dt><dd id="${k}-s"></dd></div>
-        <div><dt>Akhir cuti</dt><dd id="${k}-e"></dd></div>
-        <div><dt>Travel</dt><dd id="${k}-t"></dd></div>
-        <div><dt>Induksi</dt><dd id="${k}-i"></dd></div>
-      </dl>
-      <div class="sh"><b>Maju</b><input type="number" min="0" data-k="${k}" data-j="0" value="0" aria-label="Maju ${r.n} (hari)"><span id="${k}-mj"></span></div>
-      <div class="sh m"><b>Mundur</b><input type="number" min="0" data-k="${k}" data-j="1" value="0" aria-label="Mundur ${r.n} (hari)"><span id="${k}-md"></span></div>
-      </div>`).join('');
+    $('cols').innerHTML = Object.entries(R).map(([k, r]) => {
+      const step = (j, cls, title, hint, label, id) =>
+        `<div class="sc ${cls}"><div class="t"><b>${title}</b><span>${hint}</span></div>
+          <div class="stp"><button type="button" data-step="-1" aria-label="Kurangi hari ${title}">−</button>
+          <input type="number" min="0" data-k="${k}" data-j="${j}" value="0" aria-label="${title} ${r.n} (hari)">
+          <button type="button" data-step="1" aria-label="Tambah hari ${title}">+</button><em>hari</em></div>
+          <div class="rs"><small>${label}</small><strong id="${k}-${id}"></strong></div></div>`;
+      const tl = [['Awal cuti', 's'], ['Akhir cuti', 'e'], ['Travel on site', 't'], ['Induksi', 'i']]
+        .map(([l, id], n) => `<li><span class="n">${n + 1}</span><div><small>${l}</small><strong id="${k}-${id}"></strong></div></li>`).join('');
+      return `<div class="pc" data-k="${k}" style="--c:var(${r.c})">
+        <div class="ph"><b>${r.n}</b><span class="tag">${r.k}</span><span class="wk">${r.w} hari kerja</span></div>
+        <div class="pb"><ol class="tl">${tl}</ol>
+          <div class="sf">${step(0, 'up', 'Maju', 'geser lebih awal', 'Awal cuti menjadi', 'mj')}${step(1, 'dn', 'Mundur', 'geser lebih lambat', 'Awal cuti menjadi', 'md')}</div>
+        </div></div>`;
+    }).join('');
 
     function clearResult() {
       $('res').innerHTML = '<p class="note">Isi tanggal cuti (dd/mm/yyyy) untuk melihat hasil.</p>';
@@ -464,6 +490,14 @@
       if (!b) return;
       if (b.dataset.r) { st.r = b.dataset.r; update(); }
       if (b.dataset.m) { st.mode = b.dataset.m; update(); }
+    });
+
+    document.addEventListener('click', e => {
+      const s = e.target.closest('[data-step]');
+      if (!s) return;
+      const i = s.parentElement.querySelector('input');
+      i.value = Math.max(0, (parseInt(i.value) || 0) + +s.dataset.step);
+      i.dispatchEvent(new Event('input', { bubbles: true }));
     });
 
     document.addEventListener('click', e => {
